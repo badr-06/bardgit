@@ -1,0 +1,2 @@
+Running suite(s): s21_matrix_suite
+100%: Checks: 66, Failures: 0, Errors: 0

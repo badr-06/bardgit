@@ -1,12 +1,10 @@
-#include <cmath>
 #include <iostream>
 #include <stdexcept>
+#include <cmath>
 
 class Date {
 private:
-  int Day;
-  int Month;
-  int Year;
+  int Days;
 
   int Yearinvis(int y) {
     return (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0);
@@ -97,14 +95,11 @@ public:
   }
 };
 
-Date::Date(int D, int M, int Y) : Day(D), Month(M), Year(Y) {
+Date::Date(int D, int M, int Y) {
   if (!validdate(D, M, Y)) {
-    Day = Month = 1;
-    Year = 1970;
+    Days = 719050;
   } else {
-    Day = D;
-    Month = M;
-    Year = Y;
+   
   }
 }
 int Date::GetDay() const { return Day; }
@@ -112,3 +107,11 @@ int Date::GetDay() const { return Day; }
 int Date::GetMonth() const { return Month; }
 
 int Date::GetYear() const { return Year; }
+
+int main() {
+
+  Date dt(20, -9, 2002);
+
+  dt.print();
+
+}

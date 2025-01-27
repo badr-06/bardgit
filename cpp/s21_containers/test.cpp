@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 // #include <list>
 // #include "vector.hpp"
 
@@ -24,9 +25,8 @@ private:
             }
         };
 
-    Node *head;
-    Node *tail;
-    unsigned length;   
+    Node *sentinel;
+    std::size_t length;
 
     class ListIterator
         {
@@ -38,6 +38,16 @@ private:
             T& operator*() { return current->data; }
 
             ListIterator operator++();
+            ListIterator operator++(int);
+            ListIterator operator--();
+            ListIterator operator--(int);
+            bool operator==(ListIterator it);
+            bool operator!=(ListIterator it);
+
+        };
+
+    class constListIterator : public ListIterator
+        {
 
         };
 
@@ -47,25 +57,83 @@ public:
     using reference = T&;
     using const_reference = const T&;
     using Iterator = ListIterator;
-    // using const_iterator = constListIterator;
-    using size_type = size_t;
+    using const_iterator = constListIterator;
+    using size_type = std::size_t;
 
     list();
+    list(size_type n);
+    list(std::initializer_list<value_type> const &items);
+    list(const list &other);
+    list(list &&l);
     ~list();
+    list operator=(list &&l);
 
     void push_back(T data);
     void push_front(T data);
     void pop_back();
     void pop_front();
     void clear();
-    unsigned size() { return length; };
+    size_type size() { return length; };
+    size_type max_size() { return std::numeric_limits<size_type>::max() / sizeof(Node) / 2; };
 
-    Iterator begin() { return Iterator(head); }
-    Iterator end() { return Iterator(nullptr); }
+    Iterator begin() { return Iterator(sentinel->pNext); }
+    Iterator end() { return Iterator(sentinel); }
+    Iterator begin() { return Iterator(sentinel->pNext); }
+    Iterator end() { return Iterator(sentinel); }
+
+    const_reference front() { return this->sentinel->pNext->data; }
+    const_reference back() { return this->sentinel->pPrev->data; }
 
 
 };
 
+}
+
+template <typename T>
+s21::list<T>::list() : length(0)
+{
+    sentinel = new Node();
+    sentinel->pNext = sentinel;
+    sentinel->pPrev = sentinel;
+
+}
+
+template <typename T>
+s21::list<T>::list(size_type n)
+{
+    for(int i = 0; i < n; ++i){
+        this->push_back(0);
+    }
+}
+
+template <typename T>
+s21::list<T>::list(std::initializer_list<value_type> const &items) : length(0)
+{
+    sentinel = new Node();
+    sentinel->pNext = sentinel;
+    sentinel->pPrev = sentinel;
+    
+    for(auto it = items.begin(); it != items.end(); it++){
+           this->push_back(*it);
+    }   
+
+}
+
+template <typename T>
+s21::list<T>::list(const list& other) : length(0)
+{   
+    
+    for(auto it = other.begin(); it != other.end(); it++){
+           this->push_back(*it);
+    }   
+
+}
+
+template <typename T>
+s21::list<T>::~list()
+{
+    clear();
+    delete sentinel;
 }
 
 template <typename T>
@@ -76,46 +144,62 @@ typename s21::list<T>::ListIterator s21::list<T>::ListIterator::operator++()
 }
 
 template <typename T>
+typename s21::list<T>::ListIterator s21::list<T>::ListIterator::operator++(int)
+{
+    ListIterator temp = *this;
+    ++(*this);
+    return temp;
+}
+
+template <typename T>
+typename s21::list<T>::ListIterator s21::list<T>::ListIterator::operator--()
+{
+    return ListIterator();
+}
+
+template <typename T>
+typename s21::list<T>::ListIterator s21::list<T>::ListIterator::operator--(int)
+{
+    return ListIterator();
+}
+
+template <typename T>
+bool s21::list<T>::ListIterator::operator==(ListIterator other)
+{
+    return current == other.current;
+}
+
+template <typename T>
+bool s21::list<T>::ListIterator::operator!=(ListIterator other)
+{
+    return this->current != other.current;
+}
+
+template <typename T>
 void s21::list<T>::pop_back()
 {
-    if(tail)
+    if(length)
     {
-        if(tail->pPrev == nullptr)
-        {
-            delete tail;
-            this->head = nullptr;
-            this->tail = nullptr;
-        }
-        else
-        {
-            Node* del_tail = this->tail;
-            tail = del_tail->pPrev;
-            delete del_tail;
-            tail->pNext = nullptr;
-        }
-    length--;
+        Node *del = sentinel->pPrev;
+        sentinel->pPrev = del->pPrev;
+        del->pPrev->pNext = sentinel;
+
+        delete del;
+        sentinel->data = (--length);
     } 
 }
 
 template <typename T>
 void s21::list<T>::pop_front()
 {
-   if(head)
+    if(length)
     {
-        if(head->pNext == nullptr)
-        {
-            delete head;
-            this->head = nullptr;
-            this->tail = nullptr;
-        }
-        else
-        {
-            Node* del_head = this->head;
-            head = del_head->pNext;
-            delete del_head;
-            head->pPrev = nullptr;
-        }
-    length--;
+        Node *del = sentinel->pNext;
+        sentinel->pNext = del->pNext;
+        del->pNext->pPrev = sentinel;
+
+        delete del;
+        sentinel->data = (--length);
     } 
 }
 
@@ -129,76 +213,59 @@ void s21::list<T>::clear()
 }
 
 template <typename T>
-s21::list<T>::list()
-{
-    head = nullptr;
-    length = 0;
-}
-
-template <typename T>
-s21::list<T>::~list()
-{
-    clear();
-}
-
-template <typename T>
 void s21::list<T>::push_front(T data)
 {
-    if(head == nullptr)
+    if(this->length == 0)
     {
-        head = tail = new Node(data);
+        Node* newNode = new Node(data, sentinel, sentinel);
+        this->sentinel->pNext = newNode;
+        this->sentinel->pPrev = newNode;
     }
     else
     {   
-        if(length == 1)
-        {
-            tail->pPrev = head = new Node(data, tail);
-        }
-        else
-        {
-        Node* new_head = this->head;
-        new_head->pPrev = head = new Node(data, new_head);
-        }
+        Node *head = this->sentinel->pNext;
+
+        Node *new_head = new Node(data, head, sentinel);
+        sentinel->pNext = new_head;
+        head->pPrev = new_head;
     }
-    length++;
+    sentinel->data = (++length);
 }
 
 template <typename T>
 inline void s21::list<T>::push_back(T data)
 {
 
-    if(head == nullptr)
+    if(this->length == 0)
     {
-        tail = head = new Node(data);
+        Node* newNode = new Node(data, sentinel, sentinel);
+        sentinel->pNext = newNode;
+        sentinel->pPrev = newNode;
     } 
     else
     {
 
-        Node *new_tail = this->tail;
+        Node *tail = this->sentinel->pPrev;
 
-        new_tail->pNext = tail = new Node(data, nullptr, new_tail);
+        Node *new_tail = new Node(data, sentinel, tail);
+        sentinel->pPrev = new_tail;
+        tail->pNext = new_tail;
         
     } 
 
-    length++;
+    sentinel->data = (++length);
 }
 
 
 int main() {
 
-    s21::list<int> lst;
+    s21::list<int> list1 = {1, 2, 3};
 
-    lst.push_back(10);
-    lst.push_back(20);
-    lst.push_back(30);
+    s21::list<int> list2(list1);
 
-    s21::list<int>::Iterator it = lst.begin();
-    auto i = ++it;
-    ++it;
 
-    std::cout << *it << std::endl;
-    std::cout << *i << std::endl;
-    std::cout << lst.size() << std::endl;
+    // std::cout << *it << '\n';
+
 
     return 0;
 }

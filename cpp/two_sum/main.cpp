@@ -11,11 +11,9 @@ public:
         for(int i = 0; i < nums.size(); ++i){
             int x = target - nums[i];
             if(hash.find(x) != hash.end()){
-                cout << "YES\n";
                 return {hash[x], i};
             }
             else {
-                cout << "YES\n";
                 hash.emplace(nums[i], i);
             }
         }

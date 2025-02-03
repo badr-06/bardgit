@@ -27,28 +27,60 @@ private:
 
     Node *sentinel;
     std::size_t length;
-
-    class ListIterator
+    
+    template <typename reference>
+    class ListIteratorBase
         {
-        private:
+        protected:
             Node* current;
+        
         public:
-            ListIterator(Node* node) : current(node) {}
 
-            T& operator*() { return current->data; }
+            friend class list<T>;
 
-            ListIterator operator++();
-            ListIterator operator++(int);
-            ListIterator operator--();
-            ListIterator operator--(int);
-            bool operator==(ListIterator it);
-            bool operator!=(ListIterator it);
+            ListIteratorBase(Node* node) : current(node) {}
+
+            reference operator*() const { return current->data; }
+
+            ListIteratorBase operator++(){
+                current = current->pNext;
+                return *this;
+            }
+
+            ListIteratorBase operator++(int){
+                ListIteratorBase temp = *this;
+                ++(*this);
+                return temp;
+            }
+
+            ListIteratorBase operator--(){
+                current = current->pPrev;
+                return *this;
+            }
+
+            ListIteratorBase operator--(int){
+                ListIteratorBase temp = *this;
+                --(*this);
+                return temp;
+            }
+
+            bool operator==(const ListIteratorBase& other) const { return current == other.current; }
+            bool operator!=(const ListIteratorBase& other) const { return current != other.current; }
 
         };
 
-    class constListIterator : public ListIterator
+    class ListIterator : public ListIteratorBase<T&>
         {
+            public:
+                using ListIteratorBase<T&>::ListIteratorBase;
+        };
 
+    class constListIterator : public ListIteratorBase<const T&>
+        {
+            public:
+                using ListIteratorBase<const T&>::ListIteratorBase;
+
+                constListIterator(const ListIterator& iterator) : ListIteratorBase<const T&>(iterator.current) {}
         };
 
 public:
@@ -56,7 +88,7 @@ public:
     using value_type = T;
     using reference = T&;
     using const_reference = const T&;
-    using Iterator = ListIterator;
+    using iterator = ListIterator;
     using const_iterator = constListIterator;
     using size_type = std::size_t;
 
@@ -64,26 +96,36 @@ public:
     list(size_type n);
     list(std::initializer_list<value_type> const &items);
     list(const list &other);
-    list(list &&l);
+    list(list &&other);
     ~list();
     list operator=(list &&l);
 
+    bool empty();
+    size_type size() { return length; };
+    size_type max_size() { return std::numeric_limits<size_type>::max() / sizeof(Node) / 2; };
+
+    void clear();
+    iterator insert(iterator pos, const_reference value);
+    iterator erase(iterator pos);
     void push_back(T data);
     void push_front(T data);
     void pop_back();
     void pop_front();
-    void clear();
-    size_type size() { return length; };
-    size_type max_size() { return std::numeric_limits<size_type>::max() / sizeof(Node) / 2; };
+    void swap(list& other);
+    void merge(list& other);
+    void splice(const_iterator pos, list& other);
 
-    Iterator begin() { return Iterator(sentinel->pNext); }
-    Iterator end() { return Iterator(sentinel); }
-    Iterator begin() { return Iterator(sentinel->pNext); }
-    Iterator end() { return Iterator(sentinel); }
+
+    iterator begin() { return iterator(sentinel->pNext); }
+    iterator end() { return iterator(sentinel); }
+
+    const_iterator begin() const { return const_iterator(sentinel->pNext); }
+    const_iterator end() const { return const_iterator(sentinel); }
 
     const_reference front() { return this->sentinel->pNext->data; }
     const_reference back() { return this->sentinel->pPrev->data; }
 
+    void init_sentinel();
 
 };
 
@@ -92,10 +134,7 @@ public:
 template <typename T>
 s21::list<T>::list() : length(0)
 {
-    sentinel = new Node();
-    sentinel->pNext = sentinel;
-    sentinel->pPrev = sentinel;
-
+    init_sentinel();
 }
 
 template <typename T>
@@ -109,12 +148,10 @@ s21::list<T>::list(size_type n)
 template <typename T>
 s21::list<T>::list(std::initializer_list<value_type> const &items) : length(0)
 {
-    sentinel = new Node();
-    sentinel->pNext = sentinel;
-    sentinel->pPrev = sentinel;
+    init_sentinel();
     
-    for(auto it = items.begin(); it != items.end(); it++){
-           this->push_back(*it);
+    for(auto &it : items){
+           this->push_back(it);
     }   
 
 }
@@ -122,11 +159,22 @@ s21::list<T>::list(std::initializer_list<value_type> const &items) : length(0)
 template <typename T>
 s21::list<T>::list(const list& other) : length(0)
 {   
-    
-    for(auto it = other.begin(); it != other.end(); it++){
-           this->push_back(*it);
+    init_sentinel();   
+
+    for(auto &it : other){
+           this->push_back(it);
     }   
 
+}
+
+template <typename T>
+s21::list<T>::list(list&& other) : length(0), sentinel(nullptr)
+{   
+    sentinel = other.sentinel;
+    length = other.length;
+
+    other.sentinel = nullptr;
+    other.length = 0;
 }
 
 template <typename T>
@@ -134,45 +182,6 @@ s21::list<T>::~list()
 {
     clear();
     delete sentinel;
-}
-
-template <typename T>
-typename s21::list<T>::ListIterator s21::list<T>::ListIterator::operator++()
-{
-    current = current->pNext;
-    return *this;
-}
-
-template <typename T>
-typename s21::list<T>::ListIterator s21::list<T>::ListIterator::operator++(int)
-{
-    ListIterator temp = *this;
-    ++(*this);
-    return temp;
-}
-
-template <typename T>
-typename s21::list<T>::ListIterator s21::list<T>::ListIterator::operator--()
-{
-    return ListIterator();
-}
-
-template <typename T>
-typename s21::list<T>::ListIterator s21::list<T>::ListIterator::operator--(int)
-{
-    return ListIterator();
-}
-
-template <typename T>
-bool s21::list<T>::ListIterator::operator==(ListIterator other)
-{
-    return current == other.current;
-}
-
-template <typename T>
-bool s21::list<T>::ListIterator::operator!=(ListIterator other)
-{
-    return this->current != other.current;
 }
 
 template <typename T>
@@ -204,6 +213,66 @@ void s21::list<T>::pop_front()
 }
 
 template <typename T>
+void s21::list<T>::swap(list& other)
+{
+    Node *newNode = other.sentinel;
+    other.sentinel = this->sentinel;
+    this->sentinel = newNode;
+
+    size_type temp = other.length;
+    other.length = this->length;
+    this->length = temp;
+}
+
+template <typename T>
+void s21::list<T>::merge(list& other)
+{
+    if(other.length){
+    Node *head = other.sentinel->pNext;
+    Node *tail = other.sentinel->pPrev;
+    
+    this->sentinel->pPrev->pNext = head;
+    head->pPrev = this->sentinel->pPrev;
+    
+    this->sentinel->pPrev = tail;
+    tail->pNext = this->sentinel;
+
+    this->sentinel->data = (this->length += other.length);
+
+    delete other.sentinel;
+
+    other.init_sentinel();
+    other.length = 0;
+    }
+}
+
+template <typename T>
+void s21::list<T>::splice(const_iterator pos, list& other)
+{
+    if(other.length)
+    {
+        Node *other_head = other.sentinel->pNext;
+        Node *other_tail = other.sentinel->pPrev;
+
+        Node *this_head = pos.current->pPrev;
+        Node *this_tail = pos.current;
+
+        this_head->pNext = other_head;
+        other_head->pPrev = this_head;
+
+        other_tail->pNext = this_tail;
+        this_tail->pPrev = other_tail;
+
+        this->sentinel->data = (this->length += other.length);  
+        
+        delete other.sentinel;
+
+        other.init_sentinel();
+        other.length = 0;
+    }
+}
+
+template <typename T>
 void s21::list<T>::clear()
 {
     while(length)
@@ -213,7 +282,56 @@ void s21::list<T>::clear()
 }
 
 template <typename T>
-void s21::list<T>::push_front(T data)
+typename s21::list<T>::iterator s21::list<T>::insert(iterator pos, const_reference value)
+{
+    Node *newNode = new Node(value);
+
+    newNode->pNext = pos.current;
+    newNode->pPrev = pos.current->pPrev;
+    
+    pos.current->pPrev->pNext = newNode;
+    pos.current->pPrev = newNode;
+
+    sentinel->data = (++length);
+    return iterator(pos.current);
+}
+
+template <typename T>
+typename s21::list<T>::iterator s21::list<T>::erase(iterator pos)
+{
+    Node *newNode = pos.current;
+
+    pos.current = newNode->pNext;
+
+    pos.current->pNext = newNode->pNext->pNext;
+    pos.current->pPrev = newNode->pPrev;
+
+    newNode->pPrev->pNext = pos.current;
+
+    newNode->pNext = nullptr;
+    newNode->pPrev = nullptr;
+
+    delete newNode;
+    sentinel->data = (--length);
+    return iterator(pos.current);
+}
+
+template <typename T>
+bool s21::list<T>::empty()
+{
+    return length == 0 ? true : false;
+}
+
+template <typename T>
+void s21::list<T>::init_sentinel()
+{
+    sentinel = new Node();
+    sentinel->pNext = sentinel;
+    sentinel->pPrev = sentinel;
+}
+
+template <typename T>
+inline void s21::list<T>::push_front(T data)
 {
     if(this->length == 0)
     {
@@ -259,13 +377,42 @@ inline void s21::list<T>::push_back(T data)
 
 int main() {
 
-    s21::list<int> list1 = {1, 2, 3};
+    s21::list<int> list1 = {1, 2, 3, 4, 5};
+    s21::list<int> list2 = {8, 9};
 
-    s21::list<int> list2(list1);
+    std::cout << "list1:\n";
+    for(int to : list1){
+        std::cout << to << " ";
+    }
+    std::cout << "list1 size: " << list1.size() << '\n';
+    std::cout << "\n\n";
 
+    std::cout << "list2:\n";
+    for(int to : list2){
+        std::cout << to << " ";
+    }
+    std::cout << "list2 size: " << list2.size() << '\n';
+    std::cout << "\n\n";
 
-    // std::cout << *it << '\n';
+    auto it = list1.begin();
+    it++;
+    list1.splice(it, list2);
 
+    std::cout << "list1:\n";
+    for(int to : list1){
+        std::cout << to << " ";
+    }
+    std::cout << "\nlist1 size: " << list1.size() << '\n';
+    std::cout << "list1 end: " << *list1.end() << '\n';
+    std::cout << "\n\n";
+
+    std::cout << "list2:\n";
+    for(int to : list2){
+        std::cout << to << " ";
+    }
+    std::cout << "list2 size: " << list2.size() << '\n';
+    std::cout << "list2 end: " << *list2.end() << '\n';
+    std::cout << "\n\n";
 
     return 0;
 }

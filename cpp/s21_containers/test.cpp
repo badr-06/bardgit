@@ -64,7 +64,7 @@ private:
                 return temp;
             }
 
-            bool operator==(const ListIteratorBase& other) const { return current == other.current; }
+            bool operator==(const ListIteratorBase& other) const { return current->data == other.current->data; }
             bool operator!=(const ListIteratorBase& other) const { return current != other.current; }
 
         };
@@ -114,6 +114,9 @@ public:
     void swap(list& other);
     void merge(list& other);
     void splice(const_iterator pos, list& other);
+    void reverse();
+    void unique();
+    void sort();
 
 
     iterator begin() { return iterator(sentinel->pNext); }
@@ -272,6 +275,63 @@ void s21::list<T>::splice(const_iterator pos, list& other)
     }
 }
 
+// sentinel->5->2->sentinel | 2
+template <typename T>
+void s21::list<T>::reverse() {
+    if (length <= 1) {
+        return; // Ничего не делаем для пустого или одноэлементного списка
+    }
+
+    Node* head = sentinel->pNext;
+    Node* tail = sentinel->pPrev;
+
+    Node* current = head;
+    Node* temp = nullptr;
+
+    while(current != sentinel)
+    {
+        temp = current->pNext;
+        current->pNext = current->pPrev;
+        current->pPrev = temp;
+
+        current = current->pPrev;
+    }
+
+    tail->pPrev = sentinel;
+    head->pNext = sentinel;
+
+    sentinel->pNext = tail;
+    sentinel->pPrev = head;
+
+}
+
+template <typename T>
+void s21::list<T>::unique() 
+{
+    if(length <= 1){
+        return;
+    }
+
+    auto it2 = begin();
+    it2++;
+
+    for(auto it1 = begin(); it2 != end(); it1++, it2++)
+    {
+        while(it1 == it2 && length > 1)
+        {
+            it2 = erase(it2);
+        }
+    }
+
+}
+
+template <typename T>
+void s21::list<T>::sort() 
+{
+    
+}
+
+
 template <typename T>
 void s21::list<T>::clear()
 {
@@ -377,42 +437,20 @@ inline void s21::list<T>::push_back(T data)
 
 int main() {
 
-    s21::list<int> list1 = {1, 2, 3, 4, 5};
+    s21::list<int> list1 = {1, 1, 1, 1, 1};
     s21::list<int> list2 = {8, 9};
 
-    std::cout << "list1:\n";
-    for(int to : list1){
+    for(auto to : list1){
         std::cout << to << " ";
     }
-    std::cout << "list1 size: " << list1.size() << '\n';
-    std::cout << "\n\n";
+    std::cout << '\n';
 
-    std::cout << "list2:\n";
-    for(int to : list2){
+    list1.unique();
+
+    for(auto to : list1){
         std::cout << to << " ";
     }
-    std::cout << "list2 size: " << list2.size() << '\n';
-    std::cout << "\n\n";
-
-    auto it = list1.begin();
-    it++;
-    list1.splice(it, list2);
-
-    std::cout << "list1:\n";
-    for(int to : list1){
-        std::cout << to << " ";
-    }
-    std::cout << "\nlist1 size: " << list1.size() << '\n';
-    std::cout << "list1 end: " << *list1.end() << '\n';
-    std::cout << "\n\n";
-
-    std::cout << "list2:\n";
-    for(int to : list2){
-        std::cout << to << " ";
-    }
-    std::cout << "list2 size: " << list2.size() << '\n';
-    std::cout << "list2 end: " << *list2.end() << '\n';
-    std::cout << "\n\n";
+    std::cout << '\n';
 
     return 0;
 }

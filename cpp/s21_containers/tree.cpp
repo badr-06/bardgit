@@ -1,70 +1,4 @@
-#include <iostream>
 
-enum { RED, BLACK };
-
-template <typename Key, typename T>
-class RBtree
-{
-protected:
-    struct Node;
-
-public:
-    using key_type = Key;
-    using mapped_type = T;
-    using value_type = std::pair<const key_type, mapped_type>;
-    using refernce = value_type&;
-    using const_reference = const value_type&;
-    using size_type = size_t;
-
-    class RBtreeIteratorBase{
-        protected:
-            Node* current;
-
-        public:      
-
-            friend class RBtree;
-
-            RBtreeIteratorBase() : current(nullptr) {}
-            RBtreeIteratorBase(Node* node) : current(node) {}
-
-            RBtreeIteratorBase next() {
-                if(current->ibnYamina != nullptr){
-                    
-                }
-            }
-            RBtreeIteratorBase prev();
-
-    };
-
-    RBtree();
-    ~RBtree();
-
-    void insert(Node* node, key_type k, value_type val);
-    Node search(Node* node, key_type k);
-    Node getmax(Node* node);
-    Node getmin(Node* node);
-    void Delete(Node* node, key_type k);
-
-protected:
-    struct Node{
-        key_type key = 0;
-        value_type value;
-        Node* ubi = nullptr; // отец
-        Node* ibnShimala = nullptr; // левый сын
-        Node* ibnYamina = nullptr; // правый сын
-        int color = BLACK;
-        int Bheigth = 0;
-
-        Node(key_type x, value_type y) : key(x), value(y), color(RED) { };
-        Node(key_type x, value_type y, Node* ub) : key(x), value(y), ubi(ub), color(RED) { };
-        Node(key_type x, value_type y, Node ibnl, Node ibnr, Node* ub) : key(x), value(y), ibnShimala(ibnl), ibnYamina(ibnr), ubi(ub), color(RED) { };
-    };
-
-    Node* root;
-    Node* nil;
-    size_type size = 0;
-
-};
 
 template <typename Key, typename T>
 RBtree<Key, T>::RBtree()
@@ -116,13 +50,34 @@ typename RBtree<Key, T>::Node RBtree<Key, T>::getmin(Node *node)
 {
     if(node == nil) return nil;
     if(node->ibnShimala == nil) return node;
-    return getmax(node->ibnShimala);
+    return getmin(node->ibnShimala);
 }
 
 template <typename Key, typename T>
-void RBtree<Key, T>::Delete(Node *node, key_type k)
+void RBtree<Key, T>::DeleteNode(Node *node, key_type k)
 {
     Node* newnode = getmax(node);
+}
+
+template <typename Key, typename T>
+void RBtree<Key, T>::DeleteTree(Node* node)
+{
+    if(node == nil) return;
+    DeleteTree(node->ibnShimala);
+    DeleteTree(node->ibnYamina);
+    delete node;
+}
+
+template <typename Key, typename T>
+void RBtree<Key, T>::clear()
+{
+    if(root == nil){
+        delete nil;
+    }
+    else {
+        DeleteTree(root);
+        delete nil;
+    }
 }
 
 int main(){

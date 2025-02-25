@@ -1,14 +1,12 @@
 #include <iostream>
 #include <limits>
-// #include <list>
-// #include "vector.hpp"
 
 namespace s21 {
 template <typename T>
 class list 
 {
 
-private:
+protected:
 
     class Node 
         {
@@ -98,7 +96,7 @@ public:
     list(const list &other);
     list(list &&other);
     ~list();
-    list operator=(list &&l);
+    list operator=(list&& l);
 
     bool empty();
     size_type size() { return length; };
@@ -107,8 +105,8 @@ public:
     void clear();
     iterator insert(iterator pos, const_reference value);
     iterator erase(iterator pos);
-    void push_back(T data);
-    void push_front(T data);
+    void push_back(value_type data);
+    void push_front(value_type data);
     void pop_back();
     void pop_front();
     void swap(list& other);
@@ -117,6 +115,9 @@ public:
     void reverse();
     void unique();
     void sort();
+    list merge_sort(list l1, list l2);
+    Node* midNode(Node* head);
+    list<value_type> sortList(Node* head);
 
 
     iterator begin() { return iterator(sentinel->pNext); }
@@ -181,6 +182,13 @@ s21::list<T>::list(list&& other) : length(0), sentinel(nullptr)
 }
 
 template <typename T>
+s21::list<T> s21::list<T>::operator=(list&& l)
+{   
+    this->sentinel = l.sentinel;
+    return *this;
+}
+
+template <typename T>
 s21::list<T>::~list()
 {
     clear();
@@ -231,21 +239,9 @@ template <typename T>
 void s21::list<T>::merge(list& other)
 {
     if(other.length){
-    Node *head = other.sentinel->pNext;
-    Node *tail = other.sentinel->pPrev;
-    
-    this->sentinel->pPrev->pNext = head;
-    head->pPrev = this->sentinel->pPrev;
-    
-    this->sentinel->pPrev = tail;
-    tail->pNext = this->sentinel;
-
-    this->sentinel->data = (this->length += other.length);
-
-    delete other.sentinel;
-
-    other.init_sentinel();
-    other.length = 0;
+        list<T> NewList = merge_sort(*this, other);
+        other.clear();
+        this->swap(NewList);
     }
 }
 
@@ -329,6 +325,77 @@ template <typename T>
 void s21::list<T>::sort() 
 {
     
+
+    Node* head = sentinel->pNext;
+    Node* tail = sentinel->pPrev;
+
+    list<T> Newlist = sortList(head);
+
+    this->swap(Newlist);
+    Newlist.clear();
+}
+
+template <typename T>
+typename s21::list<T> s21::list<T>::sortList(Node* head)
+{
+
+    if(head  == sentinel || head->pNext == sentinel){
+        list<T> newlist;
+        newlist.push_back(head->data);
+        return newlist;
+    }
+
+    Node *mid = midNode(head);
+    list<T> left = sortList(head);
+    list<T> ritgh = sortList(mid);
+    return merge_sort(left, ritgh);
+    
+}
+
+template <typename T>
+typename s21::list<T> s21::list<T>::merge_sort(list l1, list l2)
+{
+    list<T> NewList;
+    auto it1 = l1.begin();
+    auto it2 = l2.begin();
+
+    while(it1 != l1.end() && it2 != l2.end()){
+        if(*it1 <= *it2){
+            NewList.push_back(*it1);
+            it1++;
+        }
+        else {
+            NewList.push_back(*it2);
+            it2++;
+        }
+    }
+
+    while(it1 != l1.end()){
+        NewList.push_back(*it1);
+        it1++;
+    }
+    while(it2 != l2.end()){
+        NewList.push_back(*it2);
+        it2++;
+    }
+
+    return NewList;
+}
+
+template <typename T>
+typename s21::list<T>::Node* s21::list<T>::midNode(Node* head)
+{
+    Node* midPrev = head;
+    head = head->pNext;
+
+    while(head != sentinel && head->pNext != sentinel){
+        midPrev = midPrev->pNext;
+        head = head->pNext->pNext;
+    }
+
+    Node* mid = midPrev->pNext;
+    midPrev->pNext = sentinel;
+    return mid;
 }
 
 
@@ -437,20 +504,32 @@ inline void s21::list<T>::push_back(T data)
 
 int main() {
 
-    s21::list<int> list1 = {1, 1, 1, 1, 1};
-    s21::list<int> list2 = {8, 9};
+    s21::list<int> list1 = {9, 2, 4, 6, 2};
+    s21::list<int> list2 = {4, 2 , 3, 1, 7, 9};
+
 
     for(auto to : list1){
         std::cout << to << " ";
     }
     std::cout << '\n';
 
-    list1.unique();
+    for(auto to : list2){
+        std::cout << to << " ";
+    }
+    std::cout << '\n';
+
+    list1.merge(list2);
 
     for(auto to : list1){
         std::cout << to << " ";
     }
     std::cout << '\n';
+
+    for(auto to : list2){
+        std::cout << to << " ";
+    }
+    std::cout << '\n';
+    
 
     return 0;
 }

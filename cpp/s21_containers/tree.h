@@ -13,13 +13,6 @@ protected:
     struct Node;
 
 public:
-    using key_type = Key;
-    using mapped_type = T;
-    using value_type = std::pair<const key_type, mapped_type>;
-    using refernce = value_type&;
-    using const_reference = const value_type&;
-    using size_type = size_t;
-
     class RBtreeIteratorBase{
         protected:
             Node* current;
@@ -78,6 +71,8 @@ public:
             using RBtreeIteratorBase::RBtreeIteratorBase;
             using RBtreeIteratorBase::current;
 
+            std::pair<Key, T>* operator->() { return current; }
+
             RBTreeIterator operator++() {
                 this->next();
                 return *this;
@@ -96,6 +91,8 @@ public:
                 this->prev();
                 return temp;
             }
+            
+            bool operator!=(const RBTreeIterator& other) { return current != other.current; }
 
     };
 
@@ -124,23 +121,30 @@ public:
             }
 
     };
+    
+    using key_type = Key;
+    using mapped_type = T;
+    using value_type = std::pair<const key_type, mapped_type>;
+    using refernce = value_type&;
+    using const_reference = const value_type&;
+    using size_type = size_t;
+    using iterator = RBTreeIterator;
+    using const_iterator = RBTreeConstIterator;
+
 
 
     RBtree();
     ~RBtree();
 
-    void insert(Node* node, key_type k, value_type val);
-    Node search(Node* node, key_type k);
-    Node getmax(Node* node);
-    Node getmin(Node* node);
-    void DeleteNode(Node* node, key_type k);
-    void DeleteTree(Node* node);
     void clear();
+    iterator begin();
+    iterator end();
+    std::pair<iterator, bool> insert(const value_type& value);
 
 protected:
     struct Node{
         key_type key = 0;
-        value_type value;
+        mapped_type value;
         Node* ubi = nullptr; // отец
         Node* ibnShimala = nullptr; // левый сын
         Node* ibnYamina = nullptr; // правый сын
@@ -148,12 +152,17 @@ protected:
         int Bheigth = 0;
 
         Node() {}
-        Node(key_type x, value_type y) : key(x), value(y), color(RED) { };
-        Node(key_type x, value_type y, Node* ub) : key(x), value(y), ubi(ub), color(RED) { };
-        Node(key_type x, value_type y, Node ibnl, Node ibnr, Node* ub) : key(x), value(y), ibnShimala(ibnl), ibnYamina(ibnr), ubi(ub), color(RED) { };
+        Node(key_type x, mapped_type y) : key(x), value(y), color(RED) { };
+        Node(key_type x, mapped_type y, Node* ub) : key(x), value(y), ubi(ub), color(RED) { };
+        Node(key_type x, mapped_type y, Node ibnl, Node ibnr, Node* ub) : key(x), value(y), ibnShimala(ibnl), ibnYamina(ibnr), ubi(ub), color(RED) { };
     };
 
-
+    iterator find(const key_type k);
+    Node getmax(Node* node);
+    Node getmin(Node* node);
+    void DeleteNode(Node* node, key_type k);
+    void DeleteTree(Node* node);
+    Node* insert_node(Node* node, key_type k, mapped_type val);
 
     Node* root;
     Node* nil;

@@ -2,8 +2,9 @@
 
 namespace s21{
 template <typename Key, typename T>
-class map{
-
+class map : public RBtree<Key, T> {
+    public:
+        
 
 
 

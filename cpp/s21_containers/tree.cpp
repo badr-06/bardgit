@@ -1,4 +1,4 @@
-
+#include "tree.h"
 
 template <typename Key, typename T>
 RBtree<Key, T>::RBtree()
@@ -13,28 +13,23 @@ RBtree<Key, T>::~RBtree()
 }
 
 template <typename Key, typename T>
-void RBtree<Key, T>::insert(Node* node, key_type k, value_type val)
+typename RBtree<Key, T>::iterator RBtree<Key, T>::find(const key_type k)
 {
-    if(node == nil){
-        root = new Node(k, val, nil, nil, nil);
-    }
+    Node* node = root;
+    while (node != nil)
+    {
+        if(node->key == k){
+            return iterator(node);
+        }
 
-    if(k < node->key){
-        if(node->ibnYamina != nil) insert(node->ibnShimala, k, val);
-        else node->ibnShimala = new Node(k ,val, node);
+        if(node->key < k){
+            node = node->ibnYamina;
+        }
+        else{
+            node = node->ibnShimala;
+        }
     }
-    else{
-        if(node->ibnYamina != nil) insert(node->ibnYamina, k, val);
-        else node->ibnYamina = new Node(k, val, node);
-    }
-}
-
-template <typename Key, typename T>
-typename RBtree<Key, T>::Node RBtree<Key, T>::search(Node *node, key_type k)
-{
-    if(node == nil) return nil;
-    if(node->key == k) return node->key;
-    return k < node->key ? search(node->ibnShimala, k) : search(node->ibnYamina, k);
+    return iterator(node);
 }
 
 template <typename Key, typename T>
@@ -69,6 +64,19 @@ void RBtree<Key, T>::DeleteTree(Node* node)
 }
 
 template <typename Key, typename T>
+typename RBtree<Key, T>::Node* RBtree<Key, T>::insert_node(Node *node, key_type k, mapped_type val)
+{
+    if(k < node->key){
+        if(node->ibnYamina != nil) return insert_node(node->ibnShimala, k, val);
+        else return (node->ibnShimala = new Node(k, val, node));
+    }
+    else{
+        if(node->ibnYamina != nil) return insert_node(node->ibnYamina, k, val);
+        else return (node->ibnYamina = new Node(k, val, node));
+    }
+}
+
+template <typename Key, typename T>
 void RBtree<Key, T>::clear()
 {
     if(root == nil){
@@ -80,10 +88,36 @@ void RBtree<Key, T>::clear()
     }
 }
 
+template <typename Key, typename T>
+typename RBtree<Key, T>::iterator RBtree<Key, T>::begin()
+{
+    Node* node = getmin(root);
+    return iterator(node);
+}
+
+template <typename Key, typename T>
+typename RBtree<Key, T>::iterator RBtree<Key, T>::end()
+{
+    return iterator(nil);
+}
+
+template <typename Key, typename T>
+std::pair<typename RBtree<Key, T>::iterator, bool> RBtree<Key, T>::insert(const value_type &value)
+{
+    auto it = find(value.first);
+    if(it != end()){
+        return {it, false};
+    }
+    else{
+        Node* node = insert_node(root, value.first, value.second);
+        return {iterator(node), true};
+    }
+}
+
 int main(){
 
     RBtree<int, char> mp;
-
+    mp.insert({1, 'a'});
 
     return 0;
 }

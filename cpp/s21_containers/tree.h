@@ -71,7 +71,8 @@ public:
             using RBtreeIteratorBase::RBtreeIteratorBase;
             using RBtreeIteratorBase::current;
 
-            std::pair<Key, T>* operator->() { return current; }
+            std::pair<Key, T> operator*() { return value_type(current->key, current->value); }
+            std::pair<Key, T>* operator->() { return &(operator*()); }
 
             RBTreeIterator operator++() {
                 this->next();
@@ -154,12 +155,12 @@ protected:
         Node() {}
         Node(key_type x, mapped_type y) : key(x), value(y), color(RED) { };
         Node(key_type x, mapped_type y, Node* ub) : key(x), value(y), ubi(ub), color(RED) { };
-        Node(key_type x, mapped_type y, Node ibnl, Node ibnr, Node* ub) : key(x), value(y), ibnShimala(ibnl), ibnYamina(ibnr), ubi(ub), color(RED) { };
+        Node(key_type x, mapped_type y, Node *ibnl, Node *ibnr, Node* ub) : key(x), value(y), ibnShimala(ibnl), ibnYamina(ibnr), ubi(ub), color(RED) { };
     };
 
     iterator find(const key_type k);
-    Node getmax(Node* node);
-    Node getmin(Node* node);
+    Node* getmax(Node* node);
+    Node* getmin(Node* node);
     void DeleteNode(Node* node, key_type k);
     void DeleteTree(Node* node);
     Node* insert_node(Node* node, key_type k, mapped_type val);

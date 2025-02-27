@@ -33,7 +33,7 @@ typename RBtree<Key, T>::iterator RBtree<Key, T>::find(const key_type k)
 }
 
 template <typename Key, typename T>
-typename RBtree<Key, T>::Node RBtree<Key, T>::getmax(Node *node)
+typename RBtree<Key, T>::Node* RBtree<Key, T>::getmax(Node *node)
 {
     if(node == nil) return nil;
     if(node->ibnYamina == nil) return node;
@@ -41,7 +41,7 @@ typename RBtree<Key, T>::Node RBtree<Key, T>::getmax(Node *node)
 }
 
 template <typename Key, typename T>
-typename RBtree<Key, T>::Node RBtree<Key, T>::getmin(Node *node)
+typename RBtree<Key, T>::Node* RBtree<Key, T>::getmin(Node *node)
 {
     if(node == nil) return nil;
     if(node->ibnShimala == nil) return node;
@@ -104,6 +104,11 @@ typename RBtree<Key, T>::iterator RBtree<Key, T>::end()
 template <typename Key, typename T>
 std::pair<typename RBtree<Key, T>::iterator, bool> RBtree<Key, T>::insert(const value_type &value)
 {
+    if(this->root == nil){
+        this->root = new Node(value.first, value.second, nil, nil, nil);
+        return {iterator(root), true};
+    }
+
     auto it = find(value.first);
     if(it != end()){
         return {it, false};
@@ -118,6 +123,7 @@ int main(){
 
     RBtree<int, char> mp;
     mp.insert({1, 'a'});
-
+    auto it = mp.begin();
+    std::cout << it->first <<'\n';
     return 0;
 }

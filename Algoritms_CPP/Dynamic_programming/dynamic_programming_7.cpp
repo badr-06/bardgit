@@ -14,7 +14,7 @@ int main() {
         std::cin >> s[i];
     }
 
-    std::sort(dp.begin(), dp.end());
+    std::sort(s.begin(), s.end());
     
     dp[1] = s[1] - s[0];
     if(N > 2){

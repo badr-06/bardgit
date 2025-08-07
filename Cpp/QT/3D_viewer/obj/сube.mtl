@@ -1,0 +1,6 @@
+newmtl RedMaterial
+Ka 1.0 0.0 0.0    # Ambient
+Kd 1.0 0.0 0.0    # Diffuse (основной цвет)
+Ks 0.5 0.5 0.5    # Specular
+Ns 50.0           # Shininess
+illum 2            # Lighting model

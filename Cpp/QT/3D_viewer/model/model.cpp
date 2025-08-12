@@ -5,10 +5,15 @@
 model::model(QWidget *parent) : QOpenGLWidget(parent)
 {
 
-    MaxMinXYZ = file_parser("../obj/cube.obj", vertices, edges);
+    MaxMinXYZ = file_parser("../obj/triangle_wire_1.obj", vertices, edges);
 }
 
-model::~model() {}
+model::~model() {
+    makeCurrent();
+    if(vao.isCreated()) vao.destroy();
+    if(vbo.isCreated()) vbo.destroy();
+    doneCurrent();
+}
 
 void model::calculateCenterRadius()
 {
@@ -25,11 +30,39 @@ void model::initializeGL()
 {
     initializeOpenGLFunctions();  // Инициализация функций OpenGL
     glEnable(GL_DEPTH_TEST);     // Включаем тест глубины для 3D
+
+    QVector<float> flatVertices;
+    for (int f = 0; f < edges.size(); ++f) {
+        for(auto to : edges[f]){
+            for(auto v : vertices[to]){
+                
+                flatVertices.push_back(v);
+            }
+        }
+    }
+    
+    vertexCount = flatVertices.size() / 3;
+
+    vbo = QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+    vbo.create();
+    vbo.bind();
+    vbo.allocate(flatVertices.constData(), flatVertices.size() * sizeof(float));
+    vbo.release();
+
+    vao.create();
+    vao.bind();
+    vbo.bind();
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, nullptr);
+
+    vao.release();
+    vbo.release();
 }
 
 void model::resizeGL(int w, int h)
 {
-    glViewport(0, 0, w, h);
+    glViewport(0, 0, width(), height());
 }
 
 void model::paintGL()
@@ -37,11 +70,15 @@ void model::paintGL()
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    calculateCenterRadius();
+
     QMatrix4x4 projection;
-    float aspect = width() / float(height());
-    projection.ortho(-modelRadius * aspect, modelRadius * aspect,
-                 -modelRadius, modelRadius,
-                 -100.0f, 100.0f);
+    projection.perspective(45.0f, width()/float(height()), 0.1f, 100.0f);
+    // QMatrix4x4 projection;
+    // float aspect = width() / float(height());
+    // projection.ortho(-modelRadius * aspect, modelRadius * aspect,
+    //              -modelRadius, modelRadius,
+    //              -100.0f, 100.0f);
 
     // Настройка камеры
     QMatrix4x4 view;
@@ -60,20 +97,14 @@ void model::paintGL()
     
     glTranslatef(-modelCenter.x(), -modelCenter.y(), -modelCenter.z());
 
-    drawCube();
+    vao.bind();
+    glDrawArrays(GL_LINES, 0, vertexCount);
+    vao.release();
 }
 
 void model::drawCube()
 {
-    calculateCenterRadius();
 
-    for (auto edg : edges) {
-        glBegin(GL_LINE_LOOP);
-            for(auto to : edg){
-            glVertex3f(vertices[to][0], vertices[to][1], vertices[to][2]);
-            }
-        glEnd();
-    }
 }
 
 

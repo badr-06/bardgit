@@ -19,3 +19,4 @@ struct minmax{
 
 minmax file_parser(QString str, QVector<QVector<float>>& vertices, QVector<QVector<int>>& edges);
 void MinMaxFuncion(minmax& mxy, const QVector<float>& v);
+int face_extract(QString str);

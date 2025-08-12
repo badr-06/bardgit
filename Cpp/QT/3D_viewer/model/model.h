@@ -7,6 +7,8 @@
 #include <QtGui/QVector3D>
 #include <QtGui/QMatrix4x4>
 #include <QtCore/QtMath>
+#include <QOpenGLBuffer>
+#include <QOpenGLVertexArrayObject>
 #include "file_parser.h"
 
 class model : public QOpenGLWidget, protected QOpenGLFunctions {
@@ -16,6 +18,9 @@ class model : public QOpenGLWidget, protected QOpenGLFunctions {
     float modelRadius;        // Радиус ограничивающей сферы
     void calculateCenterRadius(); // Вычисляет центр и радиус
     minmax MaxMinXYZ;
+    QOpenGLBuffer vbo;
+    QOpenGLVertexArrayObject vao;
+    int vertexCount = 0;
  public:
     model(QWidget *parrent = Q_NULLPTR);
     ~model();

@@ -10,10 +10,9 @@ minmax file_parser(QString str, QVector<QVector<float>>& vertices, QVector<QVect
     if(file.open(QIODevice::ReadOnly)){
         QTextStream in(&file);
         QString line = in.readLine();
-        int i = 1;
+        
         while(!line.isNull()){
             QStringList list = line.split(QRegularExpression("\\s+"));
-            qDebug() << i++;
             if(list[0] == 'v'){
                 QVector<float> vertic = {list[1].toFloat(), list[2].toFloat(), list[3].toFloat()};
                 MinMaxFuncion(mxy, vertic); // Функция где нахожу Макс и Мин по оси X и Y
@@ -22,35 +21,29 @@ minmax file_parser(QString str, QVector<QVector<float>>& vertices, QVector<QVect
             } else if(list[0] == 'f'){
                 QVector<int> temp;
                 for(int i = 1; i < list.size(); ++i){
-                int edge = list[i].front().digitValue();
-                temp.push_back(edge-1);
+                    int edge1 = face_extract(list[i]);
+                    int edge2;
+                if(i+1 < list.size()){
+                    edge2 = face_extract(list[i+1]);
+                } else {
+                    edge2 = face_extract(list[1]);
+                }
+                temp.push_back(edge1-1);
+                temp.push_back(edge2-1);
                 }
                 // std::cout << edge1 << ' ' << edge2 << ' ' << edge3 << ' ' << edge4 << std::endl;
                 edges.push_back(temp);
             } 
-
             line = in.readLine();
         }
+        
     } else {
         qDebug() << "Error file";
     }
+
     
     file.close();
 
-    // for(auto i : edges){
-    //     for(auto to : vertices[i]){
-    //         std::cout << to << ' ';
-    //     }
-    //     std::cout << '\n';
-    // }
-    // std::cout << mxy.maxX << '\n';
-    // std::cout << mxy.minX << '\n';
-
-    // std::cout << mxy.maxY << '\n';
-    // std::cout << mxy.minY << '\n';
-    
-    // std::cout << mxy.maxZ << '\n';
-    // std::cout << mxy.minZ << '\n';
     return mxy;
 }
 
@@ -66,12 +59,31 @@ void MinMaxFuncion(minmax &mxy, const QVector<float>& v)
     mxy.minZ = qMin(mxy.minZ, v[2]);
 }
 
+int face_extract(QString str)
+{
+    int res;
+    QString tmp;
+    for(int i = 0; i < str.size(); ++i){
+        if(str[i] == '/') break;
+        tmp += str[i];
+    }
+    res = tmp.toInt();
+
+    return res;
+}
+
 // int main(){
     
 //     QVector<QVector<float>> vertices;
-//     QVector<int> edges;
-//     file_parser("../obj/cube.obj", vertices, edges);
+//     QVector<QVector<int>> edges;
+//     file_parser("../obj/triangle_wire_1.obj", vertices, edges);
     
+//     for(int i = 0; i < edges.size(); ++i){
+//         for(int j = 0; j < edges[i].size(); ++j){
+//             std::cout << edges[i][j] << ' ';
+//         }
+//         std::cout << std::endl;
+//     }
 
 //     return 0;
 // }

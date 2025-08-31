@@ -3,7 +3,7 @@
 #include <QtCore/QRegularExpression>
 #include <iostream>
 
-minmax file_parser(QString str, QVector<QVector<float>>& vertices, QVector<QVector<int>>& edges)
+minmax FileParser::file_parser(QString str, QVector<QVector<float>>& vertices, QVector<QVector<int>>& edges)
 {
     minmax mxy; // структура где хранится Макс и Мин по оси X и Y
     QFile file(str);
@@ -31,7 +31,6 @@ minmax file_parser(QString str, QVector<QVector<float>>& vertices, QVector<QVect
                 temp.push_back(edge1-1);
                 temp.push_back(edge2-1);
                 }
-                // std::cout << edge1 << ' ' << edge2 << ' ' << edge3 << ' ' << edge4 << std::endl;
                 edges.push_back(temp);
             } 
             line = in.readLine();
@@ -47,7 +46,7 @@ minmax file_parser(QString str, QVector<QVector<float>>& vertices, QVector<QVect
     return mxy;
 }
 
-void MinMaxFuncion(minmax &mxy, const QVector<float>& v)
+void FileParser::MinMaxFuncion(minmax &mxy, const QVector<float>& v)
 {
     mxy.maxX = qMax(mxy.maxX, v[0]);
     mxy.minX = qMin(mxy.minX, v[0]);
@@ -59,7 +58,7 @@ void MinMaxFuncion(minmax &mxy, const QVector<float>& v)
     mxy.minZ = qMin(mxy.minZ, v[2]);
 }
 
-int face_extract(QString str)
+int FileParser::face_extract(QString str)
 {
     int res;
     QString tmp;

@@ -4,19 +4,16 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QString>
 #include <QtCore/QVector>
-#include <cfloat>
+#include "../info.h"
 
-struct minmax{
-    float maxX = FLT_MIN;
-    float minX = FLT_MAX;
+class FileParser {
+    void MinMaxFuncion(minmax& mxy, const QVector<float>& v);
+    int face_extract(QString str);
 
-    float maxY = FLT_MIN;
-    float minY = FLT_MAX;
+public:
+    FileParser() {};
+    ~FileParser() {};
 
-    float maxZ = FLT_MIN;
-    float minZ = FLT_MAX;
+    minmax file_parser(QString str, QVector<QVector<float>>& vertices, QVector<QVector<int>>& edges);
+
 };
-
-minmax file_parser(QString str, QVector<QVector<float>>& vertices, QVector<QVector<int>>& edges);
-void MinMaxFuncion(minmax& mxy, const QVector<float>& v);
-int face_extract(QString str);

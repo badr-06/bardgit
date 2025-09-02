@@ -31,4 +31,16 @@ private:
     // QOpenGLWidget* openglWidget_;
 
     QPushButton* loadButton_;
+
+    QDoubleSpinBox* move_x;
+    QDoubleSpinBox* move_y;
+    QDoubleSpinBox* move_z;
+
+    QDoubleSpinBox* rotate_x;
+    QDoubleSpinBox* rotate_y;
+    QDoubleSpinBox* rotate_z;
+
+    QDoubleSpinBox* scale_x;
+    QDoubleSpinBox* scale_y;
+    QDoubleSpinBox* scale_z;
 };

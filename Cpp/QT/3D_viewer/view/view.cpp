@@ -33,37 +33,53 @@ void mainWindow::setup()
     QGroupBox* Transformation = new QGroupBox("Transformation");
     QGridLayout* transLayot = new QGridLayout(Transformation);
 
-    transLayot->addWidget(new QLabel("Scale: "), 0, 0);
-    QDoubleSpinBox* scale_x = new QDoubleSpinBox();
-    QDoubleSpinBox* scale_y = new QDoubleSpinBox();
-    QDoubleSpinBox* scale_z = new QDoubleSpinBox();
+    transLayot->addWidget(new QLabel("Move: "), 0, 0);
+    move_x = new QDoubleSpinBox();
+    move_y = new QDoubleSpinBox();
+    move_z = new QDoubleSpinBox();
 
-    scale_x->setRange(-100, 100);
-    scale_y->setRange(-100, 100);
-    scale_z->setRange(-100, 100);
-    // scale_x->setSingleStep(0.1);
-    // scale_y->setSingleStep(0.1);
-    // scale_z->setSingleStep(0.1);
+    move_x->setRange(-100, 100);
+    move_y->setRange(-100, 100);
+    move_z->setRange(-100, 100);
+    move_x->setSingleStep(0.1);
+    move_y->setSingleStep(0.1);
+    move_z->setSingleStep(0.1);
 
-    transLayot->addWidget(scale_x, 0, 1);
-    transLayot->addWidget(scale_y, 0, 2);
-    transLayot->addWidget(scale_z, 0, 3);
+    transLayot->addWidget(move_x, 0, 1);
+    transLayot->addWidget(move_y, 0, 2);
+    transLayot->addWidget(move_z, 0, 3);
 
     transLayot->addWidget(new QLabel("Rotate: "), 1, 0);
-    QDoubleSpinBox* rotate_x = new QDoubleSpinBox();
-    QDoubleSpinBox* rotate_y = new QDoubleSpinBox();
-    QDoubleSpinBox* rotate_z = new QDoubleSpinBox();
+    rotate_x = new QDoubleSpinBox();
+    rotate_y = new QDoubleSpinBox();
+    rotate_z = new QDoubleSpinBox();
 
     rotate_x->setRange(-100, 100);
     rotate_y->setRange(-100, 100);
     rotate_z->setRange(-100, 100);
-    // rotate_x->setSingleStep(0.1);
-    // rotate_y->setSingleStep(0.1);
-    // rotate_z->setSingleStep(0.1);
+    rotate_x->setSingleStep(0.1);
+    rotate_y->setSingleStep(0.1);
+    rotate_z->setSingleStep(0.1);
 
     transLayot->addWidget(rotate_x, 1, 1);
     transLayot->addWidget(rotate_y, 1, 2);
     transLayot->addWidget(rotate_z, 1, 3);
+
+    transLayot->addWidget(new QLabel("Scale: "), 2, 0);
+    scale_x = new QDoubleSpinBox();
+    scale_y = new QDoubleSpinBox();
+    scale_z = new QDoubleSpinBox();
+
+    scale_x->setRange(-100, 100);
+    scale_y->setRange(-100, 100);
+    scale_z->setRange(-100, 100);
+    scale_x->setSingleStep(0.1);
+    scale_y->setSingleStep(0.1);
+    scale_z->setSingleStep(0.1);
+
+    transLayot->addWidget(scale_x, 2, 1);
+    transLayot->addWidget(scale_y, 2, 2);
+    transLayot->addWidget(scale_z, 2, 3);
 
     vbox->addWidget(loadButton_);
     vbox->addWidget(but2_w2);
@@ -77,7 +93,7 @@ void mainWindow::setup()
 
 void mainWindow::control()
 {
-    QObject::connect(loadButton_, SIGNAL(clicked()), this, SLOT(unLoadFile()));
+    connect(loadButton_, SIGNAL(clicked()), this, SLOT(unLoadFile()));
 
 }
 

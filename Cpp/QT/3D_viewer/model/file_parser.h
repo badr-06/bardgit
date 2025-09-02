@@ -14,6 +14,6 @@ public:
     FileParser() {};
     ~FileParser() {};
 
-    minmax file_parser(QString str, QVector<QVector<float>>& vertices, QVector<QVector<int>>& edges);
-
+    void file_parser(QFile& file, minmax& mxy, QVector<QVector<float>>& vertices, QVector<QVector<int>>& edges, QVector<float>& flatVertices);
+    void checkQvectors(QVector<QVector<float>>& vertices, QVector<QVector<int>>& edges, QVector<float>& flatVertices);
 };

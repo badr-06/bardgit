@@ -3,14 +3,11 @@
 #include <QtCore/QRegularExpression>
 #include <iostream>
 
-minmax FileParser::file_parser(QString str, QVector<QVector<float>>& vertices, QVector<QVector<int>>& edges)
+void FileParser::file_parser(QFile& file, minmax& mxy, QVector<QVector<float>>& vertices, QVector<QVector<int>>& edges, QVector<float>& flatVertices)
 {
-    minmax mxy; // структура где хранится Макс и Мин по оси X и Y
-    QFile file(str);
-    if(file.open(QIODevice::ReadOnly)){
+    checkQvectors(vertices, edges, flatVertices);
         QTextStream in(&file);
         QString line = in.readLine();
-        
         while(!line.isNull()){
             QStringList list = line.split(QRegularExpression("\\s+"));
             if(list[0] == 'v'){
@@ -36,14 +33,14 @@ minmax FileParser::file_parser(QString str, QVector<QVector<float>>& vertices, Q
             line = in.readLine();
         }
         
-    } else {
-        qDebug() << "Error file";
-    }
 
-    
-    file.close();
+}
 
-    return mxy;
+void FileParser::checkQvectors(QVector<QVector<float>>& vertices, QVector<QVector<int>>& edges, QVector<float>& flatVertices)
+{
+    if(!vertices.empty()) vertices.clear();
+    if(!edges.empty()) edges.clear();
+    if(!flatVertices.empty()) flatVertices.clear();
 }
 
 void FileParser::MinMaxFuncion(minmax &mxy, const QVector<float>& v)

@@ -10,6 +10,7 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
 #include <QSpinBox>
+#include <QMouseEvent>
 #include "../controller/controller.h"
 #include "../info.h"
 
@@ -18,25 +19,24 @@ class MyOpenGL : public QOpenGLWidget, public QOpenGLFunctions {
     QVector<QVector<int>> edges;
     QVector3D modelCenter;    // Центр модели
     float modelRadius;        // Радиус ограничивающей сферы
-    void calculateCenterRadius(); // Вычисляет центр и радиус
     minmax MaxMinXYZ;
     QOpenGLBuffer vbo;
     QOpenGLVertexArrayObject vao;
     int vertexCount = 0;
     Controller* controller_;
+    float cameraDistance;
+    float modelscale = 1.0f;
+    QVector<float> flatVertices;
  public:
     MyOpenGL(QWidget *parrent = Q_NULLPTR);
     ~MyOpenGL();
-    void initializeGL();
-    void resizeGL(int h, int w);
-    void paintGL();
+    void initializeGL() override;
+    void resizeGL(int h, int w) override;
+    void paintGL() override;
     MyOpenGL* GetScene() { return this; };
     void LoadScene(QString nameFile);
-
-    QDoubleSpinBox* scale_x_;
-    QDoubleSpinBox* scale_y_;
-    QDoubleSpinBox* scale_z_;
-
+    void wheelEvent(QWheelEvent *event);
+    void initVbaVbo();
 };
 
 

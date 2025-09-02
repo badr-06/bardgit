@@ -13,16 +13,6 @@ MyOpenGL::~MyOpenGL() {
     doneCurrent();
 }
 
-void MyOpenGL::calculateCenterRadius()
-{    
-    modelCenter = QVector3D(
-        (MaxMinXYZ.minX + MaxMinXYZ.maxX) / 2.0f,
-        (MaxMinXYZ.minY + MaxMinXYZ.maxY) / 2.0f,
-        (MaxMinXYZ.minZ + MaxMinXYZ.maxZ) / 2.0f
-    );
-    modelRadius = QVector3D(MaxMinXYZ.maxX-MaxMinXYZ.minX, MaxMinXYZ.maxY-MaxMinXYZ.minY, MaxMinXYZ.maxZ-MaxMinXYZ.minZ).length() / 2.0f;
-
-}
 
 void MyOpenGL::initializeGL()
 {
@@ -57,15 +47,14 @@ void MyOpenGL::paintGL()
     
     // Настройка камеры
     QMatrix4x4 view;
-    float cameraDistance = modelRadius * 3.0f;
     view.lookAt(QVector3D(0, 0, cameraDistance), // Позиция
                QVector3D(0, 0, 0),               // Центр
                QVector3D(0, 1, 0));              // Вектор "вверх"
     //
 
     QMatrix4x4 model;
-    model.rotate(10.0f, 10.0f, 10.0f);
-    // model.scale(0.5f, 0.5f, 0.5f);
+    model.translate(-modelCenter);
+    model.scale(modelscale);
     QMatrix4x4 final = view * model;
     
 
@@ -75,8 +64,6 @@ void MyOpenGL::paintGL()
     
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixf(final.data());
-    
-    glTranslatef(-modelCenter.x(), -modelCenter.y(), -modelCenter.z());
 
     vao.bind();
     glDrawArrays(GL_LINES, 0, vertexCount);
@@ -88,23 +75,36 @@ void MyOpenGL::LoadScene(QString nameFile)
 {
     makeCurrent();
 
-    MaxMinXYZ = controller_->LoadVertics(nameFile, vertices, edges);
-
-
-    QVector<float> flatVertices;
-    for (int f = 0; f < edges.size(); ++f) {
-        for(auto to : edges[f]){
-            for(auto v : vertices[to]){
-                
-                flatVertices.push_back(v);
-            }
-        }
-    }
-    edges.clear();
-    vertices.clear();
+    MaxMinXYZ = controller_->LoadVertics(nameFile, vertices, edges, flatVertices);
 
     vertexCount = flatVertices.size() / 3;
 
+    initVbaVbo();
+
+    controller_->findCenterModel(MaxMinXYZ, modelCenter);
+    modelRadius = controller_->findRadiusModel(MaxMinXYZ);
+    cameraDistance = modelRadius * 3.0f;
+
+    update();
+}
+
+void MyOpenGL::wheelEvent(QWheelEvent *event)
+{
+    int delta = event->angleDelta().y();
+    if(delta == 0) return;
+
+    float scaleFactor = (delta > 0) ? 1.1f : 0.9f;
+
+    for(auto &v : flatVertices){
+        v *= scaleFactor;
+    }
+
+    initVbaVbo();
+    update();
+}
+
+void MyOpenGL::initVbaVbo()
+{
     vbo.bind();
     vbo.allocate(flatVertices.constData(), flatVertices.size() * sizeof(float));
     vbo.release();
@@ -118,10 +118,6 @@ void MyOpenGL::LoadScene(QString nameFile)
 
     vao.release();
     vbo.release();
-
-    calculateCenterRadius();
-
-    update();
 }
 
 // int main(int argc, char *argv[])

@@ -11,7 +11,7 @@
 #include <QOpenGLVertexArrayObject>
 #include <QSpinBox>
 #include <QMouseEvent>
-#include "../controller/controller.h"
+#include "../Controller/controller.h"
 #include "../info.h"
 
 class MyOpenGL : public QOpenGLWidget, public QOpenGLFunctions {

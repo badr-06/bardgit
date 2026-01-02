@@ -5,8 +5,8 @@ install:
 	g++ 																				\
 	-fPIC 																				\
 	view.cpp moc_view.cpp openGL.cpp 													\
-	../controller/controller.cpp 														\
-	../model/*.cpp																	\
+	../Controller/controller.cpp 														\
+	../Model/*.cpp																	\
 	-I/usr/include/x86_64-linux-gnu/qt6 												\
 	-I/usr/include/x86_64-linux-gnu/qt6/QtWidgets 										\
 	-I/usr/include/x86_64-linux-gnu/qt6/QtOpenGL 										\

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../model/file_ready.h"
-#include "../model/model.h"
+#include "../Model/file_ready.h"
+#include "../Model/model.h"
 #include "../info.h"
 
 

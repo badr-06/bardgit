@@ -3,44 +3,100 @@
 #include <QMainWindow>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QGridLayout>
 #include <QLabel>
 #include <QPushButton>
-#include <QOpenGLWidget>
 #include <QGroupBox>
 #include <QFileDialog>
-#include "../controller/controller.h"
+#include <QDoubleSpinBox>
+#include <QSlider>
+#include <QTabWidget>
+#include <QFrame>
+#include <QComboBox>
+#include <QCheckBox>
+#include <QProgressBar>
+#include <QStatusBar>
+#include <QToolBar>
+#include <QAction>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QSplitter>
+#include <QFont>
+#include <QPalette>
+#include <QApplication>
+#include <filesystem>
 #include "openGL.h"
 
-class mainWindow : public QMainWindow {
+class MainWindow : public QMainWindow {
     Q_OBJECT
+
 public:
-    explicit mainWindow(QWidget *parrent = nullptr);
-    ~mainWindow();
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
 
 private slots:
-    void unLoadFile();
-    void Scaling();
+    void loadModel();
+    void resetTransformations();
+    void updateMoveX(double value);
+    void updateMoveY(double value);
+    void updateMoveZ(double value);
+    void updateRotateX(double value);
+    void updateRotateY(double value);
+    void updateRotateZ(double value);
+    void updateScale(double value);
+    void changeBackgroundColor();
+    void toggleWireframe(bool enabled);
+    void toggleTextures(bool enabled);
+    void about();
 
 private:
-    void setup();
-    void control();
-
-    Controller* Controller_;
-    MyOpenGL* myOpengl_;
-
-    // QOpenGLWidget* openglWidget_;
-
+    void setupUI();
+    void setupMenu();
+    void setupToolbar();
+    void setupControls();
+    void applyStyle();
+    
+    MyOpenGL* openGLWidget_;
+    
+    // Основные виджеты
+    QWidget* centralWidget_;
+    QSplitter* mainSplitter_;
+    QTabWidget* controlsTab_;
+    
+    // Панели управления
+    QWidget* transformPanel_;
+    QWidget* viewPanel_;
+    QWidget* modelPanel_;
+    
+    // Элементы управления трансформациями
+    QDoubleSpinBox* moveXSpin_;
+    QDoubleSpinBox* moveYSpin_;
+    QDoubleSpinBox* moveZSpin_;
+    QDoubleSpinBox* rotateXSpin_;
+    QDoubleSpinBox* rotateYSpin_;
+    QDoubleSpinBox* rotateZSpin_;
+    QDoubleSpinBox* scaleSpin_;
+    
+    // Слайдеры для более интуитивного управления
+    QSlider* moveXSlider_;
+    QSlider* moveYSlider_;
+    QSlider* moveZSlider_;
+    QSlider* rotateXSlider_;
+    QSlider* rotateYSlider_;
+    QSlider* rotateZSlider_;
+    QSlider* scaleSlider_;
+    
+    // Элементы вида
+    QComboBox* projectionCombo_;
+    QCheckBox* wireframeCheck_;
+    QCheckBox* texturesCheck_;
+    QPushButton* bgColorButton_;
+    
+    // Кнопки действий
     QPushButton* loadButton_;
-
-    QDoubleSpinBox* move_x;
-    QDoubleSpinBox* move_y;
-    QDoubleSpinBox* move_z;
-
-    QDoubleSpinBox* rotate_x;
-    QDoubleSpinBox* rotate_y;
-    QDoubleSpinBox* rotate_z;
-
-    QDoubleSpinBox* scale_x;
-    QDoubleSpinBox* scale_y;
-    QDoubleSpinBox* scale_z;
+    QPushButton* resetButton_;
+    
+    // Статус бар
+    QLabel* statusLabel_;
 };

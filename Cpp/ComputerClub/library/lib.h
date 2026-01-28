@@ -35,20 +35,20 @@ class computerClub
     std::set<std::string> expectedClients_; // клиенты которые ожидают
 
 public:
-    computerClub() noexcept : numberOfComputers_(0), numbAvailableComp_(0), beginWorkDay_(0), endWorkDay_(0), costHour_(0) {}
-    computerClub(int number, int cost, std::string begin, std::string end) noexcept;
+    computerClub() : numberOfComputers_(0), numbAvailableComp_(0), beginWorkDay_(0), endWorkDay_(0), costHour_(0) {}
+    computerClub(int number, int cost, std::string begin, std::string end);
 
-    auto conversionToMinutes(std::string str) -> int;
-    auto conversionToString(int minutes) -> std::string;
-    auto calculatingRevenue(int timeWhenStandUp, int timeWhenSatDown) -> int;
-    void kickingAllClients();
+    auto conversionToMinutes(std::string str) -> int; // конвертация времени в минуты
+    auto conversionToString(int minutes) -> std::string; // конвертация времени в строку xx:xx
+    auto calculatingRevenue(int timeWhenStandUp, int timeWhenSatDown) -> int; // Расчитываем выручку
+    void kickingAllClients(); // Выводим всех клиентов
 
-    auto clientArrived(const std::string time, const std::string& name) -> int;
-    auto clientSatDown(std::string time, const std::string& name, const int number) -> int;
-    auto clientExpecting( const std::string time, const std::string& name) -> int;
-    auto clientLeaves(std::string time, const int id, const std::string& name) -> int;
+    auto clientArrived(const std::string time, const std::string& name) -> int; // Клиент приходит в клуб
+    auto clientSatDown(std::string time, const std::string& name, const int number) -> int; // Клиент садится за стол
+    auto clientExpecting( const std::string time, const std::string& name) -> int; // Клиент стоит в ожидании
+    auto clientLeaves(std::string time, const int id, const std::string& name) -> int; // Клиент уходит из клуба
    
-    void printRevenu();
+    void printRevenu(); // выводим всю выручку для каждого стола
 
     const unsigned int& getnumberOfComputers(){
         return numberOfComputers_;

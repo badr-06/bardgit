@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <fstream>
+#include <string_view>
 
 #include "../library/lib.h"
 
@@ -21,19 +22,19 @@ auto isNotValidTime(std::string time) -> int {
   return 0;
 }
 
-auto isValidName(std::string name) -> int {
+auto isValidName(std::string_view name) -> int {
   return std::all_of(name.begin(), name.end(), [](char to) {
     return isdigit(to) || islower(to) || to == '_' || to == '-';
   });
 }
 
-auto isNotValidRow(std::string time, int id, std::string name, int number,
-                int maxNumber) -> int {
+auto isNotValidRow(const std::string &time, const int id, std::string_view name,
+                   const int number, const int maxNumber) -> int {
   return isNotValidTime(time) || !(id >= 1 && id <= 4) || !isValidName(name) ||
          !(number >= 0 && number <= maxNumber);
 }
 
-void run(std::ifstream& file) {
+void run(std::ifstream &file) {
   int n;
   file >> n;
 
@@ -50,7 +51,7 @@ void run(std::ifstream& file) {
   std::string name;
   int number = 0;
 
-  std::cout << begin << std::endl;  // начало рабочего дня
+  std::cout << begin << std::endl; // начало рабочего дня
 
   while (file >> time >> id >> name) {
     std::cout << time << ' ' << id << ' ' << name;
@@ -61,34 +62,35 @@ void run(std::ifstream& file) {
     } else
       std::cout << std::endl;
 
-    if (isNotValidRow(time, id, name, number, n)) exit(1);
+    if (isNotValidRow(time, id, name, number, n))
+      exit(1);
 
     switch (id) {
-      case 1:
-        club.clientArrived(time, name);
-        break;
-      case 2:
-        club.clientSatDown(time, name, number);
-        break;
-      case 3:
-        club.clientExpecting(time, name);
-        break;
-      case 4:
-        club.clientLeaves(time, id, name);
-        break;
-      default:
-        break;
+    case 1:
+      club.clientArrived(time, name);
+      break;
+    case 2:
+      club.clientSatDown(time, name, number);
+      break;
+    case 3:
+      club.clientExpecting(time, name);
+      break;
+    case 4:
+      club.clientLeaves(time, id, name);
+      break;
+    default:
+      break;
     }
   }
 
   club.kickingAllClients();
 
-  std::cout << end << std::endl;  // конец рабочего дня
+  std::cout << end << std::endl; // конец рабочего дня
 
   club.printRevenu();
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   std::string filename = argv[argc - 1];
 
   std::ifstream file(filename);

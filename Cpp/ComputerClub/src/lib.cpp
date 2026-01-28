@@ -1,7 +1,7 @@
 #include "../library/lib.h"
 
 computerClub::computerClub(int number, int cost, std::string begin,
-                           std::string end) noexcept
+                           std::string end)
     : numberOfComputers_(number), numbAvailableComp_(number), costHour_(cost) {
   beginWorkDay_ = conversionToMinutes(begin);
   endWorkDay_ = conversionToMinutes(end);
@@ -33,7 +33,8 @@ auto computerClub::calculatingRevenue(int timeWhenStandUp, int timeWhenSatDown)
   int revenue = timeWhenStandUp / 60 * costHour_;
   timeWhenStandUp %= 60;
 
-  if (timeWhenStandUp != 0) revenue += costHour_;
+  if (timeWhenStandUp != 0)
+    revenue += costHour_;
 
   return revenue;
 }
@@ -66,7 +67,7 @@ void computerClub::printRevenu() {
 }
 
 auto computerClub::clientArrived(const std::string time,
-                                 const std::string& name) -> int {
+                                 const std::string &name) -> int {
   if (beginWorkDay_ > conversionToMinutes(time) ||
       endWorkDay_ < conversionToMinutes(time)) {
     std::cerr << time << ' ' << 13 << ' ' << "NotOpenYet" << std::endl;
@@ -81,7 +82,7 @@ auto computerClub::clientArrived(const std::string time,
   return 0;
 }
 
-auto computerClub::clientSatDown(std::string time, const std::string& name,
+auto computerClub::clientSatDown(std::string time, const std::string &name,
                                  const int number) -> int {
   if (computers_[number - 1].status_ == false ||
       computers_[number - 1].name_ == name) {
@@ -95,7 +96,7 @@ auto computerClub::clientSatDown(std::string time, const std::string& name,
   int minutes = conversionToMinutes(time);
 
   if (clients_[name].status_) {
-    auto& infoComp = computers_[clients_[name].numberComputer_ - 1];
+    auto &infoComp = computers_[clients_[name].numberComputer_ - 1];
     // освободил компьютер
     infoComp.status_ = true;
     infoComp.name_ = "";
@@ -115,14 +116,15 @@ auto computerClub::clientSatDown(std::string time, const std::string& name,
     clients_[name].satDownComp = minutes;
     computers_[number - 1].status_ = false;
     computers_[number - 1].name_ = name;
-    if (numbAvailableComp_) --numbAvailableComp_;
+    if (numbAvailableComp_)
+      --numbAvailableComp_;
   }
 
   return 0;
 }
 
 auto computerClub::clientExpecting(const std::string time,
-                                   const std::string& name) -> int {
+                                   const std::string &name) -> int {
   if (numbAvailableComp_) {
     std::cerr << time << ' ' << 13 << ' ' << "ICanWaitNoLonger" << std::endl;
     return 1;
@@ -137,7 +139,7 @@ auto computerClub::clientExpecting(const std::string time,
 }
 
 auto computerClub::clientLeaves(std::string time, const int id,
-                                const std::string& name) -> int {
+                                const std::string &name) -> int {
   if (!clients_.contains(name)) {
     std::cerr << time << ' ' << 13 << ' ' << "ClientUnknown" << std::endl;
     return 1;
@@ -162,7 +164,8 @@ auto computerClub::clientLeaves(std::string time, const int id,
       ++numbAvailableComp_;
   }
 
-  if (id != 11) clients_.erase(name);
+  if (id != 11)
+    clients_.erase(name);
 
   return 0;
 }

@@ -5,7 +5,6 @@
 #include <string>
 #include <map>
 #include <set>
-#include <fstream>
 
     struct infoClient
     {
@@ -38,7 +37,6 @@ class computerClub
 public:
     computerClub() noexcept : numberOfComputers_(0), numbAvailableComp_(0), beginWorkDay_(0), endWorkDay_(0), costHour_(0) {}
     computerClub(int number, int cost, std::string begin, std::string end) noexcept;
-    ~computerClub();
 
     auto conversionToMinutes(std::string str) -> int;
     auto conversionToString(int minutes) -> std::string;

@@ -1,8 +1,9 @@
 #include <algorithm>
+#include <fstream>
 
 #include "../library/lib.h"
 
-auto isValidTime(std::string time) -> int {
+auto isNotValidTime(std::string time) -> int {
   if (time.size() != 5) {
     return 1;
   } else if (!isdigit(time[0]) || !isdigit(time[1]) || time[2] != ':' ||
@@ -26,9 +27,9 @@ auto isValidName(std::string name) -> int {
   });
 }
 
-auto isValidRow(std::string time, int id, std::string name, int number,
+auto isNotValidRow(std::string time, int id, std::string name, int number,
                 int maxNumber) -> int {
-  return isValidTime(time) || !(id >= 1 && id <= 4) || !isValidName(name) ||
+  return isNotValidTime(time) || !(id >= 1 && id <= 4) || !isValidName(name) ||
          !(number >= 0 && number <= maxNumber);
 }
 
@@ -47,7 +48,7 @@ void run(std::ifstream& file) {
   std::string time;
   int id;
   std::string name;
-  int number;
+  int number = 0;
 
   std::cout << begin << std::endl;  // начало рабочего дня
 
@@ -60,7 +61,7 @@ void run(std::ifstream& file) {
     } else
       std::cout << std::endl;
 
-    if (isValidRow(time, id, name, number, n)) exit(1);
+    if (isNotValidRow(time, id, name, number, n)) exit(1);
 
     switch (id) {
       case 1:

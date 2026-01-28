@@ -9,8 +9,6 @@ computerClub::computerClub(int number, int cost, std::string begin,
   computers_.resize(numberOfComputers_);
 }
 
-computerClub::~computerClub() {}
-
 auto computerClub::conversionToMinutes(std::string str) -> int {
   int hours = stoi(str.substr(0, 2));
   int minutes = stoi(str.substr(3, 4));

@@ -45,6 +45,7 @@ void computerClub::kickingAllClients() {
   if (!expectedClients_.empty()) {
     for (auto to : expectedClients_) {
       std::cout << end << ' ' << 11 << ' ' << to << std::endl;
+      clients_.erase(to);
     }
     expectedClients_.clear();
   }
@@ -130,6 +131,7 @@ auto computerClub::clientExpecting(const std::string time,
     return 1;
   } else if (expectedClients_.size() >= numberOfComputers_) {
     std::cerr << time << ' ' << 11 << ' ' << name << std::endl;
+    clients_.erase(name);
     return 2;
   }
 

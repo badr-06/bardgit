@@ -92,16 +92,17 @@ void MyOpenGL::LoadScene(QString nameFile)
 
 void MyOpenGL::wheelEvent(QWheelEvent *event)
 {
-    // int delta = event->angleDelta().y();
-    // if(delta == 0) return;
+    int delta = event->angleDelta().y();
+    if(delta == 0) return;
 
-    // float scaleFactor = (delta > 0) ? 1.1f : 0.9f;
-    // for(auto &v : flatVertices){
-    //     v *= scaleFactor;
-    // }
+    // auto flatVertices = controller_->getVertices();
+    float scaleFactor = (delta > 0) ? 1.1f : 0.9f;
+    for(auto &v : flatVertices){
+        v *= scaleFactor;
+    }
 
-    // initVbaVbo();
-    // update();
+    initVbaVbo();
+    update();
 }
 
 void MyOpenGL::initVbaVbo()
